@@ -289,7 +289,8 @@ TOTAL 99"></textarea>
 </div>
 
 <script>
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyIzj9C0TXT7wNKQCBOslK7GHXcyqN3oltXZVboMCKMej3PKIC3q4h9dRfnxLLwbcG43Q/exec';
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwBWjvYO9OZD0bt7ciaS0EiKc2KWoUMd7PlO6UzhZUsHfEicY0cR8luXff27C_0W885Ww/exec';
+const TOKEN = 'kaj2026!';
 
 // Tabla de costos hardcodeada (XDOC USD/doc o UNI USD)
 // costo_uyu = (xdoc/12) * 1.65 * 1.22 * 43  ó  uni * 1.65 * 1.22 * 43
@@ -475,7 +476,7 @@ async function guardar() {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rows })
+      body: JSON.stringify({ rows, token: TOKEN })
     });
 
     // no-cors means we can't read response, but if no error thrown it worked
@@ -502,5 +503,7 @@ function limpiar() {
   document.getElementById('vivoInput').value = '';
 }
 </script>
+</body>
+</html>
 </body>
 </html>
