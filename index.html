@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Vivos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #4f8ef7;
+    --accent2: #22d3a5;
+    --warn: #f97316;
+    --danger: #ef4444;
+    --text: #e8eaf6;
+    --muted: #6b7280;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    width: 100%;
+    max-width: 640px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .header-text h1 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .header-text p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    width: 100%;
+    max-width: 640px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* ── TEXTAREA ── */
+  textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    line-height: 1.7;
+    padding: 14px;
+    resize: vertical;
+    min-height: 200px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--muted); font-family: var(--sans); font-size: 0.85rem; }
+
+  /* ── BUTTONS ── */
+  .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+  .btn {
+    padding: 11px 22px;
+    border-radius: 10px;
+    border: none;
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    flex: 1;
+    justify-content: center;
+  }
+  .btn-primary:hover { background: #3a7be8; transform: translateY(-1px); }
+  .btn-primary:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
+  .btn-ghost {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
+  .btn-save {
+    background: var(--accent2);
+    color: #0f1117;
+    font-weight: 700;
+    flex: 1;
+    justify-content: center;
+  }
+  .btn-save:hover { background: #1ab892; transform: translateY(-1px); }
+  .btn-save:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
+
+  /* ── VIVO HEADER ── */
+  .vivo-info {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    background: linear-gradient(135deg, #1e2a4a, #1a2d3a);
+    border: 1px solid #2a4060;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+  }
+  .vivo-tag { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .vivo-val { font-size: 1rem; font-weight: 700; color: white; font-family: var(--mono); }
+
+  /* ── STAT CHIPS ── */
+  .chips { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    flex: 1; min-width: 130px;
+  }
+  .chip-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .chip-val { font-size: 1.1rem; font-weight: 700; font-family: var(--mono); }
+  .chip-val.green { color: var(--accent2); }
+  .chip-val.orange { color: var(--warn); }
+  .chip-val.blue { color: var(--accent); }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  thead { background: #1e2138; }
+  thead th {
+    padding: 9px 12px; text-align: left;
+    font-size: 0.68rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--muted); white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(79,142,247,0.05); }
+  tbody td { padding: 9px 12px; white-space: nowrap; }
+  .td-code { font-family: var(--mono); color: #7dd3fc; font-weight: 500; }
+  .td-right { text-align: right; font-family: var(--mono); }
+  .td-green { color: var(--accent2); }
+  .td-orange { color: var(--warn); }
+  .td-muted { color: var(--muted); font-size: 0.75rem; }
+  tfoot td {
+    padding: 10px 12px;
+    font-weight: 700;
+    background: #1e2138;
+    font-family: var(--mono);
+    border-top: 2px solid var(--border);
+  }
+
+  /* ── STATUS ── */
+  .status {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin-top: 12px;
+    display: none;
+  }
+  .status.ok { background: rgba(34,211,165,0.1); border: 1px solid rgba(34,211,165,0.3); color: var(--accent2); }
+  .status.err { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+  .status.loading { background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.3); color: var(--accent); }
+
+  /* ── SPINNER ── */
+  .spin {
+    display: inline-block; width: 13px; height: 13px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white; border-radius: 50%;
+    animation: spin 0.7s linear infinite; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── NOTE ── */
+  .note { font-size: 0.75rem; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+
+  /* MOBILE */
+  @media (max-width: 480px) {
+    .chip { min-width: 100px; }
+    .vivo-info { gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">📦</div>
+  <div class="header-text">
+    <h1>Registro de Vivos</h1>
+    <p>Cargá la lista y guardala directo en el Sheet</p>
+  </div>
+</header>
+
+<!-- INPUT -->
+<div class="card" id="inputCard">
+  <div class="card-label">Lista del vivo</div>
+  <textarea id="vivoInput" placeholder="Pegá acá el texto del vivo:
+
+GOLD 89 (99) — 30/04/2026
+_______________
+TG3022 28X790 490
+TG3118 19X790 490
+...
+_______________
+TOTAL 99"></textarea>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="procesar()">⚡ Procesar</button>
+    <button class="btn btn-ghost" onclick="limpiar()">✕ Limpiar</button>
+  </div>
+</div>
+
+<!-- PREVIEW (hidden) -->
+<div id="previewSection" style="display:none">
+
+  <div class="card">
+    <div class="card-label">Resumen del vivo</div>
+    <div class="vivo-info" id="vivoInfo"></div>
+    <div class="chips" id="chips"></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th style="text-align:right">Cant</th>
+            <th style="text-align:right">P. Venta</th>
+            <th style="text-align:right">P. Entrada</th>
+            <th style="text-align:right">Revenue</th>
+            <th style="text-align:right">Patricia</th>
+            <th style="text-align:right">Para Papá</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+        <tfoot id="tableFoot"></tfoot>
+      </table>
+    </div>
+    <p class="note">* Profit final se calcula en el Sheet cuando papá cargue los costos.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Guardar en Google Sheets</div>
+    <div class="btn-row">
+      <button class="btn btn-save" id="btnGuardar" onclick="guardar()">☁️ Guardar en Sheet</button>
+      <button class="btn btn-ghost" onclick="volver()">← Editar</button>
+    </div>
+    <div class="status" id="statusBox"></div>
+  </div>
+
+</div>
+
+<script>
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxwU_VTX0Kn7F76jF8811bFl2ca8FQQ-uTXuP6qfvwkNoFcdijz_z23r8foFKYBWYWoAg/exec';
+
+// Tabla de costos hardcodeada (XDOC USD/doc o UNI USD)
+// costo_uyu = (xdoc/12) * 1.65 * 1.22 * 43  ó  uni * 1.65 * 1.22 * 43
+const FACTOR = 1.65 * 1.22 * 43;
+const COSTOS = {
+  '2421': {xdoc:58}, 'A16': {xdoc:56}, '2408': {xdoc:60},
+  'SBN 8F': {uni:6.5}, 'SBN 58F': {uni:11.5},
+  '8473': {xdoc:60}, '9301': {xdoc:62}, '9302': {xdoc:62},
+  '9936': {xdoc:65}, '9939': {xdoc:65},
+  '5622': {xdoc:68}, '5620': {xdoc:68}, '6116': {xdoc:44},
+  '6193': {xdoc:44}, '6185': {xdoc:37}, '6206': {xdoc:47},
+  '2368': {xdoc:70}, '2370': {xdoc:70}, '6918': {xdoc:48}, '5913': {xdoc:49},
+  '4527': {uni:1.3}, '6040': {uni:1.3}, '160': {uni:1.5}, '250': {uni:1.5},
+  '6300': {uni:0.95}, '3759': {uni:2.0}, '3723': {uni:0.9},
+  '8035': {uni:2.0}, '8033': {uni:2.0}, 'S5': {uni:1.2},
+  '6219': {uni:2.0}, '5860': {uni:2.0}, '5859': {uni:2.0}, '5861': {uni:2.0},
+  'MS18': {uni:1.7}, '133': {uni:1.5}, '950': {uni:5.0},
+  '4070': {uni:3.3}, 'TG13H': {uni:6.5}, 'TG13C': {uni:6.5},
+  '7733': {xdoc:52}, '401': {xdoc:55}, '97574': {xdoc:47},
+  '95288': {xdoc:60}, '98033': {xdoc:53}, '98038': {xdoc:53},
+  '98150': {xdoc:74}, '98030': {xdoc:36}, '98252': {xdoc:39},
+  '66931': {xdoc:84}, '97727': {xdoc:65}, '97726': {xdoc:50},
+  '2515': {xdoc:80}, '2510': {xdoc:78}, '2502': {xdoc:78},
+  '2079': {xdoc:57}, '633': {xdoc:66}, '6001': {xdoc:57},
+  '6302': {xdoc:79}, '6019': {xdoc:60},
+  '7162': {xdoc:27}, '5221': {xdoc:95}, '5223': {xdoc:105},
+  '5071': {xdoc:35}, '7105': {xdoc:38}, '7134': {xdoc:35},
+  '5059': {xdoc:33}, '5205': {xdoc:57}, '15': {xdoc:42},
+  '979': {xdoc:60}, '977': {xdoc:60}, '959': {xdoc:38},
+  '975': {xdoc:40}, '972': {xdoc:40}, '980': {xdoc:60},
+  '14': {xdoc:60}, '987': {xdoc:60}, '5212': {xdoc:50}, '22': {xdoc:110},
+  '828': {uni:3.15}, '6031': {uni:2.97}, 'J63': {uni:3.45},
+  '151': {uni:3.4}, '38': {uni:3.5}, '1525': {uni:3.42},
+  '9211': {xdoc:32}, '9205': {xdoc:25}, '5489': {xdoc:22.8},
+  '4106': {xdoc:68}, '4104': {xdoc:68}, '8705': {xdoc:60},
+  '3794': {xdoc:60}, '3791': {xdoc:68}, '1181': {xdoc:38},
+  '3022': {xdoc:38}, '101': {xdoc:38},
+  '60 ZM': {uni:5.0}, '60 XT': {uni:5.0}, '60 3GZ': {uni:4.7},
+  'CDX 10': {xdoc:12}, 'JX90160': {xdoc:18},
+  '8615': {xdoc:102}, '8611': {xdoc:102}, '9806': {xdoc:98},
+  '8323': {xdoc:68}, '8319': {xdoc:68}, '8325': {xdoc:68},
+  '900': {uni:5.8}, '2028': {uni:2.7},
+};
+
+function getCostoU(cod) {
+  const info = COSTOS[cod];
+  if (!info) return null;
+  if (info.xdoc) return (info.xdoc / 12) * FACTOR;
+  if (info.uni) return info.uni * FACTOR;
+  return null;
+}
+
+let currentVivo = null;
+
+function fmt(n) {
+  return '$ ' + Math.round(n).toLocaleString('es-UY');
+}
+
+function procesar() {
+  const text = document.getElementById('vivoInput').value.trim();
+  if (!text) return;
+
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+
+  // Parse header
+  const headerLine = lines.find(l => /\(\d+\)/.test(l));
+  let vivoNum = '', totalArt = 0, fecha = '';
+  if (headerLine) {
+    const nm = headerLine.match(/\w+\s+(\d+)/);
+    const am = headerLine.match(/\((\d+)\)/);
+    const fm = headerLine.match(/(\d{2}\/\d{2}\/\d{4})/);
+    if (nm) vivoNum = nm[1];
+    if (am) totalArt = parseInt(am[1]);
+    if (fm) fecha = fm[1];
+  }
+
+  // Parse items
+  const items = [];
+  const re = /^([A-Z0-9][A-Z0-9\s\.]*?)\s+(\d+)[Xx](\d+)\s+(\d+)$/;
+  for (const line of lines) {
+    const m = line.match(re);
+    if (!m) continue;
+    const codigo = m[1].trim();
+    const cantidad = parseInt(m[2]);
+    const pVenta = parseInt(m[3]);
+    const pEntrada = parseInt(m[4]);
+    const revenue = cantidad * pVenta;
+    const patricia = Math.round((pVenta - pEntrada) / 2 * cantidad);
+    const paraPapa = revenue - patricia;
+    const costoU = getCostoU(codigo);
+    const costo = costoU !== null ? Math.round(costoU * cantidad) : 0;
+    const profit = revenue - patricia - costo;
+    const profitSinPat = paraPapa - costo;
+    items.push({ codigo, cantidad, pVenta, pEntrada, revenue, patricia, paraPapa, costo, profit, profitSinPat });
+  }
+
+  if (!items.length) {
+    alert('No encontré líneas de productos. Revisá el formato.');
+    return;
+  }
+
+  currentVivo = { vivoNum, totalArt, fecha, items };
+
+  // Vivo info
+  document.getElementById('vivoInfo').innerHTML = `
+    <div><div class="vivo-tag">N° Vivo</div><div class="vivo-val">${vivoNum || '—'}</div></div>
+    <div><div class="vivo-tag">Fecha</div><div class="vivo-val">${fecha || '—'}</div></div>
+    <div><div class="vivo-tag">Total artículos</div><div class="vivo-val">${totalArt}</div></div>
+    <div><div class="vivo-tag">Productos</div><div class="vivo-val">${items.length}</div></div>
+  `;
+
+  // Chips
+  const totRev = items.reduce((a,i) => a+i.revenue, 0);
+  const totPat = items.reduce((a,i) => a+i.patricia, 0);
+  const totPapa = items.reduce((a,i) => a+i.paraPapa, 0);
+  document.getElementById('chips').innerHTML = `
+    <div class="chip"><div class="chip-label">Revenue</div><div class="chip-val blue">${fmt(totRev)}</div></div>
+    <div class="chip"><div class="chip-label">Patricia</div><div class="chip-val orange">${fmt(totPat)}</div></div>
+    <div class="chip"><div class="chip-label">Para Papá</div><div class="chip-val green">${fmt(totPapa)}</div></div>
+  `;
+
+  // Table
+  const body = document.getElementById('tableBody');
+  body.innerHTML = '';
+  for (const it of items) {
+    body.innerHTML += `<tr>
+      <td class="td-code">${it.codigo}</td>
+      <td class="td-right">${it.cantidad}</td>
+      <td class="td-right">${fmt(it.pVenta)}</td>
+      <td class="td-right td-muted">${fmt(it.pEntrada)}</td>
+      <td class="td-right td-blue">${fmt(it.revenue)}</td>
+      <td class="td-right td-orange">${fmt(it.patricia)}</td>
+      <td class="td-right td-green">${fmt(it.paraPapa)}</td>
+    </tr>`;
+  }
+
+  // Foot
+  document.getElementById('tableFoot').innerHTML = `<tr>
+    <td colspan="4" style="color:var(--muted);font-size:0.75rem">TOTALES</td>
+    <td class="td-right" style="color:var(--accent)">${fmt(totRev)}</td>
+    <td class="td-right" style="color:var(--warn)">${fmt(totPat)}</td>
+    <td class="td-right" style="color:var(--accent2)">${fmt(totPapa)}</td>
+  </tr>`;
+
+  document.getElementById('inputCard').style.display = 'none';
+  document.getElementById('previewSection').style.display = 'block';
+  document.getElementById('statusBox').style.display = 'none';
+  document.getElementById('btnGuardar').disabled = false;
+  document.getElementById('btnGuardar').innerHTML = '☁️ Guardar en Sheet';
+  document.getElementById('btnGuardar').className = 'btn btn-save';
+}
+
+async function guardar() {
+  if (!currentVivo) return;
+  const btn = document.getElementById('btnGuardar');
+  const status = document.getElementById('statusBox');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Guardando...';
+
+  status.style.display = 'block';
+  status.className = 'status loading';
+  status.textContent = '⏳ Conectando con Google Sheets...';
+
+  const rows = currentVivo.items.map(it => ({
+    fecha: currentVivo.fecha,
+    vivoNum: currentVivo.vivoNum,
+    totalArt: currentVivo.totalArt,
+    codigo: it.codigo,
+    cantidad: it.cantidad,
+    pVenta: it.pVenta,
+    pEntrada: it.pEntrada,
+    revenue: it.revenue,
+    patricia: it.patricia,
+    paraPapa: it.paraPapa,
+    costo: it.costo,
+    profit: it.profit,
+    profitSinPatricia: it.profitSinPat,
+  }));
+
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rows })
+    });
+
+    // no-cors means we can't read response, but if no error thrown it worked
+    status.className = 'status ok';
+    status.textContent = `✅ ¡Guardado! ${rows.length} filas agregadas al Sheet.`;
+    btn.innerHTML = '✅ Guardado';
+    btn.style.background = 'var(--accent2)';
+
+  } catch(err) {
+    status.className = 'status err';
+    status.textContent = '❌ Error al guardar. Revisá la conexión e intentá de nuevo.';
+    btn.disabled = false;
+    btn.innerHTML = '☁️ Reintentar';
+  }
+}
+
+function volver() {
+  document.getElementById('previewSection').style.display = 'none';
+  document.getElementById('inputCard').style.display = 'block';
+  currentVivo = null;
+}
+
+function limpiar() {
+  document.getElementById('vivoInput').value = '';
+}
+</script>
+</body>
+</html>
